@@ -32,46 +32,59 @@ def matchUserInput(userInput):
                     with open("list.txt", "w") as file_list:
                         file_list.write(str(previous_tasks))
                         print("\nTask added successfully.")
+                        return False
             case 2:
                 index = 0
-                for task in previous_tasks.keys():
-                    index += 1
-                    print(f"{index}. {task}")
-                updateIndex = input("\nChoose a task: ")
-                try:
-                    updateIndex = int(updateIndex)
-                except ValueError as e:
-                    print("\nEnter a number only")
-                    return False
-                else:
-                    if (updateIndex > index or updateIndex < 1):
-                        print("Enter a correct option number")
+                tasks = [task for task in previous_tasks.keys() if previous_tasks[task] == "Not Done"]
+                if len(tasks) > 0:
+                    for task in tasks:
+                        index += 1
+                        print(f"{index}. {task}")
+                    updateIndex = input("\nChoose a task: ")
+                    try:
+                        updateIndex = int(updateIndex)
+                    except ValueError as e:
+                        print("\nEnter a number only")
                         return False
-                taskName = list(previous_tasks.keys())[updateIndex - 1]
-                previous_tasks[taskName] = "Done"
-                with open("list.txt", "w") as file_list:
-                    file_list.write(str(previous_tasks))
-                    print("\nTask marked as completed.")
+                    else:
+                        if (updateIndex > index or updateIndex < 1):
+                            print("Enter a correct option number")
+                            return False
+                    taskName = tasks[updateIndex - 1]
+                    previous_tasks[taskName] = "Done"
+                    with open("list.txt", "w") as file_list:
+                        file_list.write(str(previous_tasks))
+                        print("\nTask marked as completed.")
+                        return False
+                else:
+                    print("\nNo tasks left to mark as completed.")
+                    return False
             case 3:
                 index = 0
-                for task in previous_tasks.keys():
-                    index += 1
-                    print(f"{index}. {task}: {previous_tasks[task]}")
-                updateIndex = input("\nChoose a task: ")
-                try:
-                    updateIndex = int(updateIndex)
-                except ValueError as e:
-                    print("\nEnter a number only")
-                    return False
-                else:
-                    if (updateIndex > index or updateIndex < 1):
-                        print("\nEnter a correct option number")
+                tasks = [task for task in previous_tasks.keys()]
+                if len(tasks) > 0:
+                    for task in tasks:
+                        index += 1
+                        print(f"{index}. {task}: {previous_tasks[task]}")
+                    updateIndex = input("\nChoose a task: ")
+                    try:
+                        updateIndex = int(updateIndex)
+                    except ValueError as e:
+                        print("\nEnter a number only")
                         return False
-                taskName = list(previous_tasks.keys())[updateIndex - 1]
-                previous_tasks.pop(taskName)
-                with open("list.txt", "w") as file_list:
-                    file_list.write(str(previous_tasks))
-                    print("Task deleted.")
+                    else:
+                        if (updateIndex > index or updateIndex < 1):
+                            print("\nEnter a correct option number")
+                            return False
+                    taskName = tasks[updateIndex - 1]
+                    previous_tasks.pop(taskName)
+                    with open("list.txt", "w") as file_list:
+                        file_list.write(str(previous_tasks))
+                        print("Task deleted.")
+                        return False
+                else:
+                    print("\nNo tasks to delete.")
+                    return False
             case 4:
                 index = 0
                 to_do_list = previous_tasks.keys()
