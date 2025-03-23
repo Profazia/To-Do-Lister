@@ -1,6 +1,11 @@
-import ast
 from time import sleep
+import pickle
+import os
 previous_tasks = {}
+
+def saveTasks():
+    with open("list.pydata", "wb") as list:
+        pickle.dump(previous_tasks, list)
 
 def getUserInput():
         print("\n---Options---:")
@@ -29,10 +34,9 @@ def matchUserInput(userInput):
                     return False
                 else:
                     previous_tasks[taskName] = "Not Done"
-                    with open("list.txt", "w") as file_list:
-                        file_list.write(str(previous_tasks))
-                        print("\nTask added successfully.")
-                        return False
+                    saveTasks()
+                    print("\nTask added successfully.")
+                    return False
             case 2:
                 index = 0
                 tasks = [task for task in previous_tasks.keys() if previous_tasks[task] == "Not Done"]
@@ -52,10 +56,9 @@ def matchUserInput(userInput):
                             return False
                     taskName = tasks[updateIndex - 1]
                     previous_tasks[taskName] = "Done"
-                    with open("list.txt", "w") as file_list:
-                        file_list.write(str(previous_tasks))
-                        print("\nTask marked as completed.")
-                        return False
+                    saveTasks()
+                    print("\nTask marked as completed.")
+                    return False
                 else:
                     print("\nNo tasks left to mark as completed.")
                     return False
@@ -78,10 +81,9 @@ def matchUserInput(userInput):
                             return False
                     taskName = tasks[updateIndex - 1]
                     previous_tasks.pop(taskName)
-                    with open("list.txt", "w") as file_list:
-                        file_list.write(str(previous_tasks))
-                        print("Task deleted.")
-                        return False
+                    saveTasks()
+                    print("Task deleted.")
+                    return False
                 else:
                     print("\nNo tasks to delete.")
                     return False
@@ -104,21 +106,27 @@ def matchUserInput(userInput):
 
 print("Welcome to To-Do Lister")
 try:
-    with open("list.txt", "r+") as file_list:
-        text = file_list.read()
-        if (text != "" and text != "{}"):
-            index = 0
-            to_do_list = ast.literal_eval(text)
-            previous_tasks.update(to_do_list)
-            print("Previous Data -> ")
-            for key in to_do_list.keys():
-                value = to_do_list[key]
-                index += 1
-                print(f"{index}. {key} -> Status: {value}")
+    if not os.path.exists("list.pydata"):
+        with open("list.pydata", "w+b") as list:
+            pickle.dump({}, list)
+    with open("list.pydata", "r+b") as file_list:
+        if (file_list.read(0)):
+            data = pickle.load(file_list)
+            if (len(data.keys()) > 0):
+                index = 0
+                previous_tasks = data
+                print("Previous Data -> ")
+                for key in data.keys():
+                    value = data[key]
+                    index += 1
+                    print(f"{index}. {key} -> Status: {value}")
+            else: 
+                print("\nNo previous data found.")
+                pickle.dump({}, file_list)
+                previous_tasks = {}
         else: 
             print("\nNo previous data found.")
-            file_list.seek(0)
-            file_list.write("{}")
+            pickle.dump({}, file_list)
             previous_tasks = {}
     while True:
         userInput = getUserInput()
